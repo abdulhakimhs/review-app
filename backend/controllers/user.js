@@ -57,7 +57,7 @@ exports.create = async (req, res) => {
  exports.verifyEmail = async (req, res) => {
     const {userId, OTP} = req.body
     if(!isValidObjectId(userId)) return res.status(401).json({error: "Invalid User!"})
-    const getUser = await User.findOne(userId)
+    const getUser = await User.findById(userId)
     
     if(!getUser) return res.status(401).json({error: "User not found"})
 
