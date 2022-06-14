@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const config = require("../config");
 
 mongoose
   .connect(
-    "mongodb+srv://ahsanDbUser:ahsanDbUser98@cluster0.ugltr.mongodb.net/review_app",
+    `mongodb+srv://${config.dbuser}:${config.dbpass}@cluster0.ugltr.mongodb.net/${config.dbname}`,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {
