@@ -5,4 +5,5 @@ module.exports = {
   dbuser: process.env.DBUSER,
   dbpass: process.env.DBPASS,
   dbname: process.env.DBNAME,
+  jwt_secret: process.env.JWT_SECRET,
 };
