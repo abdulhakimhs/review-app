@@ -19,7 +19,7 @@ export default function ThemeProvider({ children }) {
     }, [])
 
     return (
-        <ThemeContext.Provider value={{ theme: "just for testing" }}>
+        <ThemeContext.Provider value={{ toggleTheme }}>
             {children}
         </ThemeContext.Provider>
     )
