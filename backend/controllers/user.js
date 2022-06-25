@@ -42,7 +42,14 @@ exports.create = async (req, res) => {
         `
     })
 
-    sendSuccess(res, "Please verify your email, OTP has been sent to your email account!", 201)
+    sendSuccess(
+        res,
+        `user: {
+            id: ${newUser._id},
+            name: ${newUser.name},
+            email: ${newUser.email}
+        }`,
+        201)
 }
 
 exports.verifyEmail = async (req, res) => {
