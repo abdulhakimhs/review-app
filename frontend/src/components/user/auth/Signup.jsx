@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { createUser } from "../../../api/auth";
-import { useNotification } from "../../../hooks";
+import { useAuth, useNotification } from "../../../hooks";
 import { commonModalClasses } from "../../../utils/theme";
 import Container from "../../Container";
 import CustomLink from "../../CustomLink";
@@ -35,6 +35,8 @@ export default function Signup() {
     password: ""
   })
 
+  const {authInfo} = useAuth()
+  const {isLoggedIn} = authInfo
   const navigate = useNavigate()
 
   const {updateNotification} = useNotification()
@@ -49,15 +51,21 @@ export default function Signup() {
     const {ok, error} = validateUserInfo(userInfo)
 
     if(!ok) return updateNotification('error', error)
+
     const response = await createUser(userInfo)
     if(response.error) return console.log(response.error)
 
     navigate('/auth/verification', {
       state: {user: response.user}, 
-      replace: true
+      replace: true,
     })
     
   }
+
+  useEffect(() => {
+    // move user to somewhere else
+    if(isLoggedIn) navigate('/')
+  }, [isLoggedIn])
 
   const {name, email, password} = userInfo
 

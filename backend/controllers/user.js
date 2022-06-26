@@ -42,14 +42,13 @@ exports.create = async (req, res) => {
         `
     })
 
-    sendSuccess(
-        res,
-        `user: {
-            id: ${newUser._id},
-            name: ${newUser.name},
-            email: ${newUser.email}
-        }`,
-        201)
+    res.status(201).json({
+        user: {
+            id: newUser._id,
+            name: newUser.name,
+            email: newUser.email
+        }
+    })
 }
 
 exports.verifyEmail = async (req, res) => {
@@ -83,7 +82,15 @@ exports.verifyEmail = async (req, res) => {
         html: `<h2>Welcome to our app and thanks for choosing us.</h2>`
     })
 
-    sendSuccess(res, "Your email sucessfully verified")
+    const jwtToken = jwt.sign(
+        {userId: getUser._id},
+        `${config.jwt_secret}`
+    );
+
+    res.json({
+        user: {id: getUser._id, name: getUser.name, email: getUser.email, token: jwtToken},
+        message: "Email successfully verified."
+    })
 }
 
 exports.resendEmailVerificationToken = async (req, res) => {

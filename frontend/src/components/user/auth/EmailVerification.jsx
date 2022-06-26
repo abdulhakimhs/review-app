@@ -1,14 +1,12 @@
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useRef } from "react";
-import { useState } from "react";
 import { commonModalClasses } from "../../../utils/theme";
 import Container from "../../Container";
 import FormContainer from "../../form/FormContainer";
 import Submit from "../../form/Submit";
 import Title from "../../form/Title";
 import { verifyUserEmail } from "../../../api/auth";
+import { useAuth, useNotification } from "../../../hooks";
 
 const OTP_LENGTH = 6;
 let currentOTPIndex;
@@ -27,12 +25,16 @@ export default function EmailVerification() {
 
   const [otp, setOtp] = useState(new Array(OTP_LENGTH).fill(""));
   const [activeOtpIndex, setActiveOtpIndex] = useState(0);
+
+  const {isAuth, authInfo} = useAuth()
+  const {isLoggedIn} = authInfo
   const inputRef = useRef()
 
   const {state} = useLocation();
   const user = state?.user
   
   const navigate = useNavigate()
+  const {updateNotification} = useNotification()
 
   const focusNextInputField = (index) => {
     setActiveOtpIndex(index + 1)
@@ -65,14 +67,16 @@ export default function EmailVerification() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if(!isValidOTP(otp)) return console.log('invalid OTP')
+    if(!isValidOTP(otp)) return updateNotification('error','invalid OTP')
     //submit otp
-    const {error, message} = await verifyUserEmail({
+    const {error, message, user: userResponse} = await verifyUserEmail({
       OTP: otp.join(''), 
       userId: user.id
     })
-    if(error) return console.log(error)
-    console.log(message)
+    if(error) return updateNotification('error', error)
+    updateNotification('success', message)
+    localStorage.setItem('auth-token', userResponse.token)
+    isAuth();
   }
 
   useEffect(() =>{
@@ -81,7 +85,8 @@ export default function EmailVerification() {
 
   useEffect(() =>{
     if(!user) navigate('/not-found')
-  }, [user])
+    if(isLoggedIn) navigate('/')
+  }, [user, isLoggedIn])
 
   // if(!user) return null
 
