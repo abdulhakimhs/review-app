@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { createUser } from "../../../api/auth";
 import { useAuth, useNotification } from "../../../hooks";
+import { isValidEmail } from "../../../utils/helper";
 import { commonModalClasses } from "../../../utils/theme";
 import Container from "../../Container";
 import CustomLink from "../../CustomLink";
@@ -12,14 +13,13 @@ import Submit from "../../form/Submit";
 import Title from "../../form/Title";
 
 const validateUserInfo = ({name, email, password}) => {
-  const isValidEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
   const isValidName = /^[a-z A-Z]+$/
 
   if(!name.trim()) return {ok:false, error: 'Name is missing'}
   if(!isValidName.test(name)) return {ok:false, error: 'Invalid Name'}
   
   if(!email.trim()) return {ok: false, error: 'Email is missing'}
-  if (!isValidEmail.test(email)) return {ok: false, error: 'Invalid Email'}
+  if (!isValidEmail(email)) return {ok: false, error: 'Invalid Email'}
 
   if(!password.trim()) return {ok: false, error: 'Password is missing'}
   if(password.length < 8) return {ok: false, error: 'Password must be 8 characters long'}

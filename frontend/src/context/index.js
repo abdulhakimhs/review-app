@@ -5,12 +5,12 @@ import ThemeProvider from './ThemeProvider'
 
 export default function ContextProviders({ children }) {
     return (
-        <AuthProvider>
-            <NotificationProvider>
+        <NotificationProvider>
+            <AuthProvider>
                 <ThemeProvider>
                     {children}
                 </ThemeProvider>
-            </NotificationProvider>
-        </AuthProvider>
+            </AuthProvider>
+        </NotificationProvider>
     )
 }

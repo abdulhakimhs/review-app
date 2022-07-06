@@ -88,7 +88,7 @@ exports.verifyEmail = async (req, res) => {
     );
 
     res.json({
-        user: {id: getUser._id, name: getUser.name, email: getUser.email, token: jwtToken},
+        user: {id: getUser._id, name: getUser.name, email: getUser.email, token: jwtToken, isVerified: getUser.isVerified},
         message: "Email successfully verified."
     })
 }
@@ -147,7 +147,7 @@ exports.forgotPassword = async (req, res) => {
     const newPasswordResetToken = await passwordResetToken({owner: getUser._id, token})
     await newPasswordResetToken.save()
 
-    const resetPasswordUrl = `http://localhost:3000/reset-password?token=${token}&id=${getUser._id}`
+    const resetPasswordUrl = `http://localhost:3000/auth/reset-password?token=${token}&id=${getUser._id}`
 
     //send otp to user
     var transport = generateMailTransporter();
@@ -174,7 +174,7 @@ exports.resetPassword = async (req, res) => {
     const {newPassword, userId} = req.body
 
     const getUser = await User.findById(userId)
-    const matched = await User.comparePassword(newPassword)
+    const matched = await getUser.comparePassword(newPassword)
     if(matched) return sendError(res, "The new password must be different from the old one")
 
     getUser.password = newPassword
@@ -206,15 +206,15 @@ exports.signIn = async (req, res, next) => {
     if(!getUser) return sendError(res, "Email not registered!", 404)
 
     const matched = await getUser.comparePassword(password)
-    if(matched) return sendError(res, "Password mismatch!")
+    if(!matched) return sendError(res, "Password mismatch!")
 
-    const {_id, name} = getUser;
+    const {_id, name, isVerified} = getUser;
 
     const jwtToken = jwt.sign(
         {userId: _id},
         `${config.jwt_secret}`
     );
 
-    res.json({user: {id: _id, name, email, token: jwtToken}})
+    res.json({user: {id: _id, name, email, token: jwtToken, isVerified}})
 
 }
